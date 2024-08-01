@@ -72,14 +72,51 @@ const Home = () => {
     }
   }
 
-  const onSearchNote = async (query) => { }
+  const onSearchNote = async (query) => {
+    try {
+      const res = await axios.get("http://localhost:3000/api/note/search", {
+        params: { query },
+        withCredentials: true,
+      })
+
+      if (res.data.success === false) {
+        toast.error(res.data.message)
+        return
+      }
+      setIsSearch(true)
+      setAllNotes(res.data.notes)
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
 
   const handleClearSearch = () => {
     setIsSearch(false)
     getAllNotes()
   }
 
-  const updateIsPinned = async (noteData) => { }
+  const updateIsPinned = async (noteData) => {
+    const noteId = noteData._id
+
+    try {
+      const res = await axios.put(
+        "http://localhost:3000/api/note/update-note-pinned/" + noteId,
+        { isPinned: !noteData.isPinned },
+        { withCredentials: true }
+      )
+
+      if (res.data.success === false) {
+        toast.error(res.data.message)
+        console.log(res.data.message)
+        return
+      }
+
+      toast.success(res.data.message)
+      getAllNotes()
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
 
   return (
     <>

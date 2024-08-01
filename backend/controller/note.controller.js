@@ -113,21 +113,15 @@ export const getAllNotes = async (req, res, next) => {
 export const updateNotePinned = async (req, res, next) => {
   try {
     const note = await Note.findById(req.params.noteId)
-
     if (!note) {
       return next(errorHandler(404, "Note not found!"))
     }
-
     if (req.user.id !== note.userId) {
       return next(errorHandler(401, "You can only update your own note!"))
     }
-
     const { isPinned } = req.body
-
     note.isPinned = isPinned
-
     await note.save()
-
     res.status(200).json({
       success: true,
       message: "Note updated successfully",
@@ -140,11 +134,9 @@ export const updateNotePinned = async (req, res, next) => {
 
 export const searchNote = async (req, res, next) => {
   const { query } = req.query
-
   if (!query) {
     return next(errorHandler(400, "Search query is required"))
   }
-
   try {
     const matchingNotes = await Note.find({
       userId: req.user.id,
@@ -153,7 +145,6 @@ export const searchNote = async (req, res, next) => {
         { content: { $regex: new RegExp(query, "i") } },
       ],
     })
-
     res.status(200).json({
       success: true,
       message: "Notes matching the search query retrieved successfully",
